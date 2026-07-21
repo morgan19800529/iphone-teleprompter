@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Morgan 提词器" />
+  <title>Morgan iPhone 提词器</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app" id="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">MORGAN STUDIO</p>
+        <h1>iPhone 提词器</h1>
+      </div>
+      <button id="fullscreenBtn" class="icon-btn" type="button" aria-label="全屏">⛶</button>
+    </header>
+
+    <section class="editor-panel" id="editorPanel">
+      <label for="scriptInput">口播稿</label>
+      <textarea id="scriptInput" spellcheck="false" placeholder="把口播稿粘贴到这里……"></textarea>
+      <div class="editor-actions">
+        <button id="sampleBtn" class="secondary" type="button">载入示例</button>
+        <button id="clearBtn" class="secondary danger" type="button">清空</button>
+        <button id="startBtn" class="primary" type="button">开始提词</button>
+      </div>
+    </section>
+
+    <section class="teleprompter" id="teleprompter">
+      <div class="reading-guide" aria-hidden="true"></div>
+      <article id="promptText" class="prompt-text"></article>
+    </section>
+
+    <section class="controls" id="controls">
+      <div class="control-row main-controls">
+        <button id="restartBtn" type="button">↺</button>
+        <button id="playPauseBtn" class="primary round" type="button">▶</button>
+        <button id="editBtn" type="button">编辑</button>
+      </div>
+
+      <div class="slider-control">
+        <div class="slider-label"><span>滚动速度</span><output id="speedValue">30</output></div>
+        <input id="speedRange" type="range" min="5" max="100" value="30" />
+      </div>
+
+      <div class="slider-control">
+        <div class="slider-label"><span>字体大小</span><output id="fontValue">44</output></div>
+        <input id="fontRange" type="range" min="26" max="88" value="44" />
+      </div>
+
+      <div class="toggle-grid">
+        <button id="mirrorBtn" class="toggle" type="button" aria-pressed="false">镜像：关</button>
+        <button id="guideBtn" class="toggle active" type="button" aria-pressed="true">引导线：开</button>
+        <button id="contrastBtn" class="toggle" type="button" aria-pressed="false">高对比</button>
+      </div>
+    </section>
+
+    <div id="countdown" class="countdown" hidden></div>
+  </main>
+  <script src="app.js" defer></script>
+</body>
+</html>
