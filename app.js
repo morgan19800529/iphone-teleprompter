@@ -12,6 +12,12 @@ const guide = $('guideBtn');
 const hint = $('tapHint');
 const scriptSelect = $('scriptSelect');
 const fileInput = $('fileInput');
+const topicInput = $('topicInput');
+const kindSelect = $('kindSelect');
+const durationSelect = $('durationSelect');
+const aiStatus = $('aiStatus');
+const outlineBox = $('outlineBox');
+const outlineBody = $('outlineBody');
 
 const sample = '47岁，我住在清迈。\n\n很多人以为，陪孩子读书，是一段轻松的生活。\n\n但真正让我焦虑的，不是现在辛苦，而是孩子毕业以后，我是谁。\n\n所以我决定，从今天开始重新学习、重新创作，也重新开始。';
 
@@ -72,21 +78,24 @@ function switchScript(id) {
   currentId = id;
   input.value = current().body;
   renderScriptList();
+  renderOutline();
   saveScripts();
 }
 
-function newScript(title, body) {
+function newScript(title, body, meta) {
   const s = {
     id: uid(),
     title: title || '新脚本',
     body: body || '',
     named: Boolean(title),
+    meta: meta || null,
     updated: Date.now()
   };
   scripts.push(s);
   currentId = s.id;
   input.value = s.body;
   renderScriptList();
+  renderOutline();
   saveScripts();
   return s;
 }
@@ -316,6 +325,139 @@ fileInput.onchange = () => {
   reader.readAsText(file);
   fileInput.value = '';
 };
+
+/* ---------- AI 生成 ---------- */
+const DURATIONS = {
+  live:  [[15,'15 分钟'],[30,'30 分钟'],[60,'60 分钟'],[90,'90 分钟']],
+  video: [[1,'1 分钟'],[3,'3 分钟'],[5,'5 分钟'],[10,'10 分钟']]
+};
+
+function renderDurations() {
+  const list = DURATIONS[kindSelect.value] || DURATIONS.live;
+  const prev = durationSelect.value;
+  durationSelect.innerHTML = '';
+  list.forEach(([v, label]) => {
+    const o = document.createElement('option');
+    o.value = v; o.textContent = label;
+    durationSelect.appendChild(o);
+  });
+  if (list.some(([v]) => String(v) === prev)) durationSelect.value = prev;
+  else durationSelect.value = String(list[Math.min(1, list.length - 1)][0]);
+}
+
+function setStatus(text, kind) {
+  aiStatus.hidden = !text;
+  aiStatus.textContent = text || '';
+  aiStatus.className = 'ai-status' + (kind ? ' ' + kind : '');
+}
+
+function renderOutline() {
+  const meta = current().meta;
+  if (!meta || (!meta.outline?.length && !meta.hooks?.length && !meta.interactions?.length)) {
+    outlineBox.hidden = true;
+    outlineBody.innerHTML = '';
+    return;
+  }
+  let html = '';
+  if (meta.outline?.length) {
+    html += '<h4>提纲</h4><ol>' + meta.outline.map(t => '<li></li>').join('') + '</ol>';
+  }
+  if (meta.hooks?.length) {
+    html += '<h4>留人节点</h4><ul>' + meta.hooks.map(() => '<li></li>').join('') + '</ul>';
+  }
+  if (meta.interactions?.length) {
+    html += '<h4>互动点</h4><ul>' + meta.interactions.map(() => '<li></li>').join('') + '</ul>';
+  }
+  outlineBody.innerHTML = html;
+  // 用 textContent 填充，避免 AI 返回内容里的尖括号被当成 HTML
+  const ol = outlineBody.querySelector('ol');
+  if (ol) [...ol.children].forEach((li, i) => { li.textContent = meta.outline[i]; });
+  const uls = outlineBody.querySelectorAll('ul');
+  let idx = 0;
+  if (meta.hooks?.length) {
+    [...uls[idx].children].forEach((li, i) => {
+      const h = meta.hooks[i];
+      if (h.at) {
+        const span = document.createElement('span');
+        span.className = 'hook-at';
+        span.textContent = h.at + ' ';
+        li.appendChild(span);
+      }
+      li.appendChild(document.createTextNode(h.line || ''));
+    });
+    idx++;
+  }
+  if (meta.interactions?.length && uls[idx]) {
+    [...uls[idx].children].forEach((li, i) => { li.textContent = meta.interactions[i]; });
+  }
+  outlineBox.hidden = false;
+}
+
+$('generateBtn').onclick = async () => {
+  const topic = topicInput.value.trim();
+  if (!topic) { topicInput.focus(); setStatus('先写个主题', 'error'); return; }
+
+  const btn = $('generateBtn');
+  btn.disabled = true;
+  setStatus('AI 正在写稿，大概要十几秒', 'busy');
+
+  try {
+    const r = await window.LiveScript.generate({
+      topic, kind: kindSelect.value, duration: Number(durationSelect.value)
+    });
+
+    const meta = {
+      ...r.meta,
+      outline: r.outline, hooks: r.hooks, interactions: r.interactions
+    };
+    const title = r.title || topic.slice(0, 20);
+
+    const s = current();
+    if (!s.body.trim()) {
+      s.title = title; s.named = true; s.body = r.script; s.meta = meta;
+      input.value = r.script;
+      renderScriptList(); renderOutline(); saveScripts();
+    } else {
+      newScript(title, r.script, meta);
+    }
+    apply();
+
+    setStatus(r.degraded ? '生成完成，但格式没解析出来，已按原文放入' : '生成完成，可以直接开始提词', '');
+  } catch (e) {
+    if (e.code === 'NO_KEY') {
+      setStatus('还没设置 API Key，点右上角齿轮', 'error');
+      openSettings();
+    } else {
+      setStatus(e.message || '生成失败', 'error');
+    }
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+kindSelect.onchange = renderDurations;
+
+/* API Key 设置 */
+function openSettings() {
+  const cfg = window.LiveScript.config();
+  $('apiKeyInput').value = cfg.apiKey || '';
+  $('modelInput').value = cfg.model || '';
+  $('aiSettings').hidden = false;
+}
+$('aiSettingsBtn').onclick = openSettings;
+$('apiCancelBtn').onclick = () => { $('aiSettings').hidden = true; };
+$('apiSaveBtn').onclick = () => {
+  window.LiveScript.setConfig({
+    apiKey: $('apiKeyInput').value.trim(),
+    model: $('modelInput').value.trim() || 'claude-sonnet-5'
+  });
+  $('aiSettings').hidden = true;
+  setStatus('已保存设置', '');
+};
+$('aiSettings').onclick = e => { if (e.target === $('aiSettings')) $('aiSettings').hidden = true; };
+
+renderDurations();
+renderOutline();
 
 speed.oninput = apply;
 font.oninput = apply;

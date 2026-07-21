@@ -24,6 +24,28 @@
     </header>
 
     <section class="editor-panel" id="editorPanel">
+      <div class="ai-panel">
+        <div class="ai-head">
+          <h2>今天播什么？</h2>
+          <button id="aiSettingsBtn" class="icon-btn small ghost" type="button" aria-label="AI 设置">⚙</button>
+        </div>
+        <input id="topicInput" type="text" placeholder="输入主题，例如：清迈生活一个月的真实开销" />
+        <div class="ai-opts">
+          <select id="kindSelect" aria-label="内容类型">
+            <option value="live">直播</option>
+            <option value="video">口播视频</option>
+          </select>
+          <select id="durationSelect" aria-label="时长"></select>
+          <button id="generateBtn" class="primary" type="button">AI 生成稿子</button>
+        </div>
+        <p id="aiStatus" class="ai-status" hidden></p>
+      </div>
+
+      <details id="outlineBox" class="outline-box" hidden>
+        <summary>本场提纲与留人节点</summary>
+        <div id="outlineBody"></div>
+      </details>
+
       <div class="script-bar">
         <select id="scriptSelect" aria-label="选择脚本"></select>
         <button id="newScriptBtn" class="icon-btn small" type="button" aria-label="新建脚本">＋</button>
@@ -72,8 +94,24 @@
       </div>
     </section>
 
+    <div id="aiSettings" class="modal" hidden>
+      <div class="modal-card">
+        <h3>AI 设置</h3>
+        <label for="apiKeyInput">Anthropic API Key</label>
+        <input id="apiKeyInput" type="password" placeholder="sk-ant-..." autocomplete="off" />
+        <label for="modelInput">模型</label>
+        <input id="modelInput" type="text" placeholder="claude-sonnet-5" autocomplete="off" />
+        <p class="note">密钥只保存在这台设备的浏览器里，不会上传到任何服务器。这是自用方案——正式对外发布时必须改成服务端代理，否则密钥会被他人取走盗刷。</p>
+        <div class="modal-actions">
+          <button id="apiCancelBtn" type="button">取消</button>
+          <button id="apiSaveBtn" class="primary" type="button">保存</button>
+        </div>
+      </div>
+    </div>
+
     <div id="countdown" class="countdown" hidden></div>
   </main>
+  <script src="ai.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>

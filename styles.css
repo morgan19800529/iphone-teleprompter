@@ -11,3 +11,38 @@
 .script-bar select{flex:1;min-width:0;appearance:none;-webkit-appearance:none;border:1px solid #2c2c2c;background:#151515 url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23bdbdbd' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center/18px;color:#fff;border-radius:14px;padding:12px 38px 12px 16px;font-size:16px;text-overflow:ellipsis}
 .icon-btn.small{width:46px;height:46px;font-size:22px;flex:none}
 .editor-actions.minor button{flex:1;padding:10px 6px;font-size:13px}
+
+/* AI 生成面板 */
+.ai-panel{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid #262626;border-radius:18px;background:linear-gradient(180deg,#111 0%,#0b0b0b 100%)}
+.ai-head{display:flex;justify-content:space-between;align-items:center}
+.ai-head h2{margin:0;font-size:17px;letter-spacing:.02em}
+.icon-btn.ghost{background:transparent;border-color:#2c2c2c;font-size:18px}
+#topicInput{width:100%;border:1px solid #272727;border-radius:14px;background:#0d0d0d;color:#fff;padding:14px 16px;font-size:16px;outline:none}
+#topicInput:focus{border-color:#5a5a5a}
+.ai-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ai-opts select{appearance:none;-webkit-appearance:none;border:1px solid #2c2c2c;background:#151515 url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23bdbdbd' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center/16px;color:#fff;border-radius:14px;padding:12px 32px 12px 14px;font-size:15px}
+.ai-opts #generateBtn{grid-column:1 / -1}
+.ai-status{margin:0;font-size:13px;color:#bdbdbd;min-height:18px}
+.ai-status.error{color:#ff8b8b}
+.ai-status.busy::after{content:'';display:inline-block;width:10px;text-align:left;animation:dots 1.2s steps(4,end) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+
+/* 提纲 */
+.outline-box{border:1px solid #262626;border-radius:16px;background:#0d0d0d;padding:12px 14px}
+.outline-box summary{cursor:pointer;font-size:14px;color:#bdbdbd}
+.outline-box h4{margin:12px 0 6px;font-size:13px;color:#8f8f8f;letter-spacing:.08em}
+.outline-box ol,.outline-box ul{margin:0;padding-left:18px;font-size:14px;line-height:1.7}
+.outline-box li{margin-bottom:4px}
+.outline-box .hook-at{color:#ff6b6b;font-weight:600}
+
+/* 弹层 */
+.modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(0,0,0,.72);padding:20px}
+.modal[hidden]{display:none}
+.modal-card{width:min(420px,100%);background:#111;border:1px solid #2a2a2a;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:10px;max-height:86dvh;overflow-y:auto}
+.modal-card h3{margin:0 0 4px;font-size:18px}
+.modal-card label{font-size:13px;color:#bdbdbd}
+.modal-card input{width:100%;border:1px solid #272727;border-radius:12px;background:#0a0a0a;color:#fff;padding:12px 14px;font-size:15px;outline:none}
+.modal-card input:focus{border-color:#5a5a5a}
+.modal-card .note{margin:2px 0 0;font-size:12px;line-height:1.6;color:#8f8f8f}
+.modal-actions{display:flex;gap:10px;margin-top:6px}
+.modal-actions button{flex:1}
