@@ -24,8 +24,17 @@
     </header>
 
     <section class="editor-panel" id="editorPanel">
-      <label for="scriptInput">口播稿</label>
+      <div class="script-bar">
+        <select id="scriptSelect" aria-label="选择脚本"></select>
+        <button id="newScriptBtn" class="icon-btn small" type="button" aria-label="新建脚本">＋</button>
+      </div>
       <textarea id="scriptInput" spellcheck="false" placeholder="把口播稿粘贴到这里……"></textarea>
+      <input id="fileInput" type="file" accept=".txt,.md,.markdown,text/plain,text/markdown" hidden />
+      <div class="editor-actions minor">
+        <button id="importBtn" class="secondary" type="button">导入文件</button>
+        <button id="renameBtn" class="secondary" type="button">重命名</button>
+        <button id="deleteBtn" class="secondary danger" type="button">删除脚本</button>
+      </div>
       <div class="editor-actions">
         <button id="sampleBtn" class="secondary" type="button">载入示例</button>
         <button id="clearBtn" class="secondary danger" type="button">清空</button>
