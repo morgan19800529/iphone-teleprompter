@@ -1,4 +1,4 @@
-const CACHE = 'morgan-teleprompter-v5';
+const CACHE = 'morgan-teleprompter-v6';
 const ASSETS = [
   './', './index.html', './styles.css', './app.js', './ai.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
