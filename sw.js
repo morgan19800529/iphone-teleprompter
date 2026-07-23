@@ -2,7 +2,7 @@
  * 有网 → 永远取最新文件，避免新旧文件混搭导致的白屏/卡死
  * 没网 → 回退到缓存，飞行模式照常可用
  */
-const CACHE = 'morgan-teleprompter-v8';
+const CACHE = 'morgan-teleprompter-v9';
 const ASSETS = [
   './', './index.html', './styles.css', './app.js', './ai.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'
