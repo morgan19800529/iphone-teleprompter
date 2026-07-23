@@ -255,10 +255,26 @@ async function countdown() {
   play();
 }
 
+/* ---------- 全屏 ---------- */
+function enterFullscreen() {
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (req && !document.fullscreenElement && !document.webkitFullscreenElement) {
+    try { req.call(el); } catch {}
+  }
+}
+function exitFullscreen() {
+  const ex = document.exitFullscreen || document.webkitExitFullscreen;
+  if (ex && (document.fullscreenElement || document.webkitFullscreenElement)) {
+    try { ex.call(document); } catch {}
+  }
+}
+
 /* ---------- 交互绑定 ---------- */
 $('startBtn').onclick = () => {
   const text = input.value.trim();
   if (!text) { input.focus(); return; }
+  enterFullscreen();          // 借这次点击手势进全屏（安卓收起地址栏/系统栏）
   promptText.textContent = text;
   teleprompter.scrollTop = 0;
   app.classList.add('is-reading');
@@ -267,7 +283,7 @@ $('startBtn').onclick = () => {
   countdown();
 };
 
-$('editBtn').onclick = () => { pause(); app.classList.remove('is-reading'); };
+$('editBtn').onclick = () => { pause(); exitFullscreen(); app.classList.remove('is-reading'); };
 playBtn.onclick = toggle;
 $('restartBtn').onclick = () => { pause(); teleprompter.scrollTo({ top: 0, behavior: 'smooth' }); };
 $('sampleBtn').onclick = () => { input.value = sample; save(); };
@@ -486,11 +502,9 @@ $('contrastBtn').onclick = e => {
   e.currentTarget.setAttribute('aria-pressed', on);
 };
 
-$('fullscreenBtn').onclick = async () => {
-  try {
-    if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
-    else await document.exitFullscreen();
-  } catch {}
+$('fullscreenBtn').onclick = () => {
+  if (document.fullscreenElement || document.webkitFullscreenElement) exitFullscreen();
+  else enterFullscreen();
 };
 
 /* ---------- 前后台切换 ---------- */
